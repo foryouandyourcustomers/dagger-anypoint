@@ -1,4 +1,4 @@
-package apcli
+package anypoint
 // The cue file for maintaining the container image running anypoint-cli
 import (
 	"universe.dagger.io/alpine"

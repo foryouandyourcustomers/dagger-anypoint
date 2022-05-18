@@ -1,4 +1,4 @@
-package apcli
+package anypoint
 // The cue file for publishing API specs to Anypoint Platform
 import (
 	"dagger.io/dagger"
@@ -15,7 +15,7 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	// the container image
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion
 	// the authentication for interacting with anytime platform
-  auth: #ApAuth
+  auth: #Auth
 	// name of the mule app
 	name: string
 	// source fs of the file
@@ -49,7 +49,7 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	// source of the app
 	appSource: dagger.#FS
 	// Anypoint authentication
-  auth: #ApAuth
+  auth: #Auth
   // name of the mule app
   name: string
   // Sem version of the specification
@@ -110,7 +110,7 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	// source of the app
 	appSource: dagger.#FS
 	// Anypoint authentication
-  auth: #ApAuth
+  auth: #Auth
 
 	_maven: docker.#Pull & {
 		source: "maven:\(mavenVersion)"

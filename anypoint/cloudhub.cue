@@ -1,4 +1,4 @@
-package apcli
+package anypoint
 // The cue file for deploying, maintaining mule applications that are deployed to Anypoint cloudhub
 import (
 	"dagger.io/dagger"
@@ -12,7 +12,7 @@ import (
 	// the container image
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion
 	// the authentication for interacting with anytime platform
-  auth: #ApAuth
+  auth: #Auth
   // Name and version of the runtime environment.
   runtime: *"4.4.0"| string
   // Number of workers. (This value is '1' by default)

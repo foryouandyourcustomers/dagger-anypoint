@@ -1,4 +1,4 @@
-package apcli
+package anypoint
 // main cue file for maintaining common configurations for anypoint-cli
 import (
 	"dagger.io/dagger"
@@ -7,7 +7,7 @@ import (
 	)
 
 // The Anypoint Authentication config for interacting with anypoint platform
-#ApAuth: {
+#Auth: {
 	// Anypoint client id
 	clientId: dagger.#Secret
 	// Anypoint client secret
@@ -25,7 +25,7 @@ import (
 	cliEnv: [string]: string
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion | string
 	cliCommand: "publish_apispec_exchange" | "publish_muleapp_exchange" | "publish_muleapp_cloudhub"
-	cliAuth: #ApAuth
+	cliAuth: #Auth
 	source: dagger.#FS
 	// Normally the layers are cached, the command won't be re-runed.
 	ignoreCache: *false | bool

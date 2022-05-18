@@ -1,4 +1,4 @@
-package apcli
+package anypoint
 // The cue file for publishing API specs to Anypoint Platform
 import (
 	"dagger.io/dagger"
@@ -9,7 +9,7 @@ import (
 	// the container image
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion
 	//
-  auth: #ApAuth
+  auth: #Auth
 	// specification name
 	name: string
 	// Path to the directory of the specification
