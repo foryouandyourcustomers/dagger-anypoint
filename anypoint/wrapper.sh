@@ -119,7 +119,7 @@ publish_muleapp_cloudhub(){
         deploy_status=$(cat /deploy-status.json | jq -r .status)
 
         echo "status: ${deploy_status}"
-        if [[ "${deploy_status}" == "STARTED" || "${deploy_status}" == "FAILED" ]]; then
+        if [[ "${deploy_status}" == "STARTED" || "${deploy_status}" == "DEPLOY_FAILED" ]]; then
             still_deploying=false
         fi
     done
