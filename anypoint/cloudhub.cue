@@ -57,13 +57,16 @@ import (
   	_encryptPersistentQueues: true
 	}
 	// combine the properties
-	_properties: strings.Join(list.FlattenN([
+	_properties: strings.Join(list.FlattenN(
+		[
+			["Version:\(version)"],
 				for k, v in properties {
 				if (v & string) != _|_ && (k & string) != _|_ {
 					["\(k):\(v)"]
 				}
 			},
-		], 1),"\n")
+		],
+		 1),"\n")
 
 	runCli: #_runCli & {
 		cliVersion: cliVersion
@@ -73,7 +76,7 @@ import (
 		// don't rely on cache
 		ignoreCache: true
 		cliEnv: {
-			API_NAME: "\(name)-v\(strings.Replace(version,".","",-1))"
+			API_NAME: "\(name)"
 			APP_RUNTIME: runtime
 			CH_WORKER_COUNT: "\(workers)"
 			CH_WORKER_SIZE: "\(workerSize)"

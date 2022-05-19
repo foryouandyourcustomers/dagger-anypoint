@@ -80,15 +80,16 @@ publish_muleapp_exchange(){
 # CH_ENABLE_STATIC_IP
 # CH_ENABLE_AUTORESTART
 # API_SPEC_IMPL_JAR_PATH
+# TODO: clean up here
 publish_muleapp_cloudhub(){
   echo "Checking if Muleapp ${API_NAME} already exists"\
   # When there's no app, the command exist 255 barrrr...
   anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-status || true
   init_status=$(cat /init-status)
+  echo "${APP_PROPERTIES}" > /deploy-properties
 
   if [[ "${init_status}" == *"No application"* ]]; then
     echo "Deploying ${API_SPEC_IMPL_JAR_PATH} to the cloudhub @${CH_REGION} "
-    echo "${APP_PROPERTIES}" > /deploy-properties
 
     anypoint-cli runtime-mgr cloudhub-application deploy  \
            --client_id ${ANYPOINT_CLIENT_ID} \
@@ -119,14 +120,54 @@ publish_muleapp_cloudhub(){
         deploy_status=$(cat /deploy-status.json | jq -r .status)
 
         echo "status: ${deploy_status}"
-        if [[ "${deploy_status}" == "STARTED" || "${deploy_status}" == "DEPLOY_FAILED" ]]; then
+        if [[ "${deploy_status}" == "STARTED" ]]; then
             still_deploying=false
+        fi
+        if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
+            still_deploying=false
+            exit 1
         fi
     done
 
   else
-     echo "Muleapp '${API_NAME}' is already running; won't redeploy;"
-     echo ${init_status} | jq > deploy-status.json
+     echo "Muleapp '${API_NAME}' is already running; redeploying..."
+     anypoint-cli runtime-mgr cloudhub-application modify  \
+                --client_id ${ANYPOINT_CLIENT_ID} \
+                --client_secret ${ANYPOINT_CLIENT_SECRET} \
+                --organization "${ANYPOINT_ORG}" \
+                --environment "${ANYPOINT_ENV}" \
+                --runtime "${APP_RUNTIME}" \
+                --workers "${CH_WORKER_COUNT}" \
+                --workerSize "${CH_WORKER_SIZE}" \
+                --region "${CH_REGION}" \
+                --persistentQueues "${APP_ENABLE_PQ}" \
+                --persistentQueuesEncrypted "${APP_ENABLE_PQ_ENC}" \
+                --staticIPsEnabled "${CH_ENABLE_STATIC_IP}" \
+                --autoRestart "${CH_ENABLE_AUTORESTART}" \
+                --propertiesFile /deploy-properties \
+                "${API_NAME}" "${API_SPEC_IMPL_JAR_PATH}"
+
+    anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-deploy-status.json
+    app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
+    deploy_status=$(cat /init-deploy-status.json | jq -r .status)
+
+    echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
+    still_deploying=true
+
+    while ${still_deploying}; do
+        sleep 30
+        anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /deploy-status.json
+        deploy_status=$(cat /deploy-status.json | jq -r .status)
+
+        echo "status: ${deploy_status}"
+        if [[ "${deploy_status}" == "STARTED" ]]; then
+            still_deploying=false
+        fi
+        if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
+            still_deploying=false
+            exit 1
+        fi
+    done
   fi
 
   mv /init-status /output
