@@ -84,7 +84,7 @@ import (
 		// don't rely on cache
 		ignoreCache: true
 		cliEnv: {
-			API_NAME:              "\(name)"
+			API_NAME:              "\(_id)"
 			APP_RUNTIME:           runtime
 			CH_WORKER_COUNT:       "\(workers)"
 			CH_WORKER_SIZE:        "\(workerSize)"
