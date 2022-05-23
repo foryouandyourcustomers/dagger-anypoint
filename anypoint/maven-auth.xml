@@ -6,17 +6,6 @@
   </pluginGroups>
   <servers>
     <server>
-      <id>gitlab-maven</id>
-      <configuration>
-        <httpHeaders>
-          <property>
-            <name>Job-Token</name>
-            <value>${CI_JOB_TOKEN}</value>
-          </property>
-        </httpHeaders>
-      </configuration>
-    </server>
-    <server>
       <id>anypoint-exchange</id>
       <username>~~~Client~~~</username> <!--this is not a placeholder -->
       <password>${env.ANYPOINT_CLIENT_ID}~?~${env.ANYPOINT_CLIENT_SECRET}</password>

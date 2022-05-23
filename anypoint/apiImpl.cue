@@ -9,6 +9,12 @@ import (
 
 _#MavenVersion: "3.8.5-openjdk-11"
 
+// The credentials for accessing mulesoft enterprise repositories
+#MavenRepoAuth: {
+	muleRepoUser: dagger.#Secret
+	muleRepoPass: dagger.#Secret
+}
+
 
 // Publishes Api Implementation to Exchange
 #PublishMuleAppExchange: {
@@ -50,6 +56,8 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	appSource: dagger.#FS
 	// Anypoint authentication
   auth: #Auth
+  // The credentials for accessing mulesoft enterprise repositories
+  mavenRepoAuth: #MavenRepoAuth
   // name of the mule app
   name: string
   // Sem version of the specification
@@ -76,6 +84,8 @@ _#MavenVersion: "3.8.5-openjdk-11"
 					ANYPOINT_CLIENT_ID:  auth.clientId
 					ANYPOINT_CLIENT_SECRET:  auth.clientSecret
 					ANYPOINT_BG_ID:  auth.businessGroupId
+					MULESOFT_EE_REPO_USER: mavenRepoAuth.muleRepoUser
+					MULESOFT_EE_REPO_PASS: mavenRepoAuth.muleRepoPass
 				}
 				workdir: "/"
 				mounts: {
@@ -111,6 +121,8 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	appSource: dagger.#FS
 	// Anypoint authentication
   auth: #Auth
+  // The credentials for accessing mulesoft enterprise repositories
+  mavenRepoAuth: #MavenRepoAuth
 
 	_maven: docker.#Pull & {
 		source: "maven:\(mavenVersion)"
@@ -133,6 +145,8 @@ _#MavenVersion: "3.8.5-openjdk-11"
 					ANYPOINT_CLIENT_ID:  auth.clientId
 					ANYPOINT_CLIENT_SECRET:  auth.clientSecret
 					ANYPOINT_BG_ID:  auth.businessGroupId
+					MULESOFT_EE_REPO_USER: mavenRepoAuth.muleRepoUser
+					MULESOFT_EE_REPO_PASS: mavenRepoAuth.muleRepoPass
 				}
 				workdir: "/"
 				mounts: {
