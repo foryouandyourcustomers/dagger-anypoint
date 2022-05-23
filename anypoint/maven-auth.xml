@@ -44,7 +44,9 @@
         <repository>
           <id>anypoint-exchange</id>
           <name>Exchange Repo</name>
-          <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${env.ANYPOINT_BG_ID}/maven</url>
+          <url>
+            https://maven.anypoint.mulesoft.com/api/v3/organizations/${env.ANYPOINT_BG_ID}/maven
+          </url>
           <layout>default</layout>
           <releases>
             <enabled>true</enabled>

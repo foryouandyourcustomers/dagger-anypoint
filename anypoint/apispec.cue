@@ -1,4 +1,5 @@
 package anypoint
+
 // The cue file for publishing API specs to Anypoint Platform
 import (
 	"dagger.io/dagger"
@@ -9,7 +10,7 @@ import (
 	// the container image
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion
 	//
-  auth: #Auth
+	auth: #Auth
 	// specification name
 	name: string
 	// Path to the directory of the specification
@@ -28,14 +29,14 @@ import (
 	runCli: #_runCli & {
 		cliVersion: cliVersion
 		cliCommand: "publish_apispec_exchange"
-		cliAuth: auth
+		cliAuth:    auth
 		cliEnv: {
-			API_NAME: name
-			API_SPEC_ID: id
-			API_SPEC_TYPE: type
+			API_NAME:               name
+			API_SPEC_ID:            id
+			API_SPEC_TYPE:          type
 			API_SPEC_MAJOR_VERSION: majorVersion
-			API_SPEC_SEM_VERSION: version
-			API_SPEC_PATH: "/src"
+			API_SPEC_SEM_VERSION:   version
+			API_SPEC_PATH:          "/src"
 			if (publishToExchange) {
 				API_SPEC_PUBLISH: "1"
 			}
