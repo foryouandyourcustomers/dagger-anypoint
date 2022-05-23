@@ -30,18 +30,28 @@ List of supported actions and its relation to anypoint platform
 | Publish Mule Application (jar)        | [`anypoint#PublishMuleAppExchange`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L20)  | Publishes the the Mule application artifact (jar) to Exchange                                                                                                                                                             |
 | Deploy Mule Application to CloudHub   | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
 
-## TODOs
+## Ongoing work
 
-| Features                            | ⏳->🔄->⌛ |
-|-------------------------------------|----------|
-| Build & Test MuleApplication        | ⌛        |
-| Publish API specification           | ⌛        |
-| Deploy Mule Application to Cloudhub | ⌛        |
-| Create & Attach Api Manager         | 🔄       |
-| Create & Manage Automated Policies  | ⏳        |
-| Create & Manage Api Contracts       | ⏳        |
-|                                     |          |
-|                                     |          |
-|                                     |          |
-|                                     |          |
+| Features                                   | Runtime Environment | ✅ 🔄 ⛔ | Notes |
+|--------------------------------------------|---------------------|--------|-------|
+| Build & Test MuleApplication               | Any                 | ✅      |       |
+| Publish API specification                  | Any                 | ✅      |       |
+| Create, Manage, Promote Api Manager        | Any                 | 🔄     |       |
+| Create, Manage, Promote Automated Policies | Any                 | 🔄     |       |
+| Create & Manage Api Contracts              | Any                 | 🔄     |       |
+| Deploy Mule Application                    | Cloudhub            | ✅      |       |
+| Mule Application Environment Promotion     | Cloudhub            | 🔄     |       |
+| Deploy Mule Application                    | Hybrid              | 🔄     |       |
+| Mule Application Environment Promotion     | Hybrid              | 🔄     |       |
+| Deploy Mule Application                    | RTF                 | 🔄     |       |
+| Mule Application Environment Promotion     | RTF                 | 🔄     |       |
+| Deploy Mule Application                    | PCE                 | ⛔      |       |
+| Mule Application Environment Promotion     | PCE                 | ⛔      |       |
 
+--
+
+| Legend | Notes             |
+|--------|-------------------|
+| ✅      | Completed         |
+| 🔄     | Considering       |
+| ⛔      | Will not consider |
