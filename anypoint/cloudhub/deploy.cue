@@ -45,13 +45,14 @@ import (
 	healthCheckPath: *"/" | string
 
 	// Internal flags
+	_id: strings.Replace(strings.ToLower(name), " ", "-", -1)
 	_default_props: {}
 	_encryptPersistentQueues: false | bool
 	_enablePersistentQueues:  false | bool
 	_deployableJarFile:       string | *targetName
 
 	if ( targetName == " ") {
-		_deployableJarFile: "muleapp-\(name)-\(version).jar"
+		_deployableJarFile: "muleapp-\(_id)-\(version).jar"
 	}
 
 	if (persistentQueues == "enable") {
