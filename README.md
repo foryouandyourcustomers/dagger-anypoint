@@ -4,12 +4,7 @@
 A [dagger](https://dagger.io/) module for building, testing and deploying Api specification and Mule applications (Api Implementations) to Anypoint platform. The module internally uses [`anypoint-cli`](https://docs.mulesoft.com/anypoint-cli/3.x). 
 
 
-## Description
-_details yet to be added_
-
 ## Installation
-_details yet to be added_
-
 You can install the latest release with
 
 ```shell
@@ -25,25 +20,28 @@ import github.com/foryouandyourcustomers/dagger-anypoint/anypoint
 
 List of supported actions and its relation to anypoint platform
 
-| name           | method/config                     | notes                                                                                                                                                                                                |
-|----------------|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Authentication | `anypoint#Auth`                   | The main [config](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cli.cue#L10) for authentication with anypoint, this is needed for any interactions with the platform. |
-| PublishApiSpec | `anypoint#PublishApiSpec`         |                                                                                                                                                                                                      |
-|                | `anypoint#BuildMuleApp`           |                                                                                                                                                                                                      |
-|                | `anypoint#TestMuleApp`            |                                                                                                                                                                                                      |
-|                | `anypoint#TestMuleApp`            |                                                                                                                                                                                                      |
-|                | `anypoint#PublishMuleAppExchange` |                                                                                                                                                                                                      |
-|                | `anypoint#PublishMuleAppCloudHub` |                                                                                                                                                                                                      |
+| name                                  | method/config                                                                                                                      | notes                                                                                                                                                                                                                     |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Platform authentication               | [`anypoint#Auth`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cli.cue#L10)                        | The main [config](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cli.cue#L10) for authentication with anypoint, this is needed for any interactions with the platform.                      |
+| Mulesoft EE Repository Authentication | [`anypoint#MavenRepoAuth`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L13)           | The [credentials](https://docs.mulesoft.com/mule-runtime/latest/maven-reference#configure-maven-to-access-mulesoft-enterprise-repository) to the Mulesoft Enterprise repository that was acquired via the support ticket. |
+| Publish Api Specification             | [`anypoint#PublishApiSpec`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apispec.cue#L8)           | Publishes the API specification to Design center and optionally, publish to Exchange.                                                                                                                                     |
+| Build Mule Application(jar)           | [`anypoint#BuildMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L52)            | Builds Mule application to the mule application                                                                                                                                                                           |
+| Test Mule Application                 | [`anypoint#TestMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L117)            | Tests Mule application by running MUnit test cases.                                                                                                                                                                       |
+| Publish Mule Application (jar)        | [`anypoint#PublishMuleAppExchange`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L20)  | Publishes the the Mule application artifact (jar) to Exchange                                                                                                                                                             |
+| Deploy Mule Application to CloudHub   | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
 
+## TODOs
 
+| Features                            | ⏳->🔄->⌛ |
+|-------------------------------------|----------|
+| Build & Test MuleApplication        | ⌛        |
+| Publish API specification           | ⌛        |
+| Deploy Mule Application to Cloudhub | ⌛        |
+| Create & Attach Api Manager         | 🔄       |
+| Create & Manage Automated Policies  | ⏳        |
+| Create & Manage Api Contracts       | ⏳        |
+|                                     |          |
+|                                     |          |
+|                                     |          |
+|                                     |          |
 
-
-#### Environment variables
-
-| Variable               | Description       |
-|------------------------|-------------------|
-| ANYPOINT_CLIENT_ID     | client Id         |
-| ANYPOINT_CLIENT_SECRET | client secret     |
-| ANYPOINT_ORG           | organization Id   |
-| ANYPOINT_ENV           | environment name  |
-| ANYPOINT_BG_ID         | business group id |
