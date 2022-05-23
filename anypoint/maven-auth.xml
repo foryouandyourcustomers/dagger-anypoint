@@ -17,9 +17,14 @@
       </configuration>
     </server>
     <server>
-      <id>fyayc-essen-exchange</id>
+      <id>anypoint-exchange</id>
       <username>~~~Client~~~</username> <!--this is not a placeholder -->
       <password>${env.ANYPOINT_CLIENT_ID}~?~${env.ANYPOINT_CLIENT_SECRET}</password>
+    </server>
+    <server>
+      <id>mulesoft-enterprise-repository</id>
+      <username>${env.MULESOFT_EE_REPO_USER}</username> <!--this is not a placeholder -->
+      <password>${env.MULESOFT_EE_REPO_PASS}</password>
     </server>
   </servers>
   <profiles>
@@ -30,8 +35,26 @@
       </activation>
       <repositories>
         <repository>
-          <id>fyayc-essen-exchange</id>
-          <name>MuleRepository</name>
+          <!--
+            You need to request for these credentials by creating a support ticket!
+            This repository contains all the proprietary plugins, dependencies such as
+            Connectors, MUnit related deps etc
+            Ref: https://docs.mulesoft.com/mule-runtime/latest/maven-reference#configure-mulesoft-enterprise-repository
+          -->
+          <id>mulesoft-enterprise-repository</id>
+          <name>MuleEE</name>
+          <url>https://repository.mulesoft.org/nexus-ee/content/repositories/releases-ee/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>anypoint-exchange</id>
+          <name>Exchange Repo</name>
           <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${env.ANYPOINT_BG_ID}/maven</url>
           <layout>default</layout>
           <releases>
