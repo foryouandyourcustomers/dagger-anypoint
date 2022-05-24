@@ -45,7 +45,7 @@ import (
 	// verification path
 	healthCheckPath: *"/" | string
 
-	// Internal flags
+	// Internal fields
 
 	// yeah, this need not be unique always but meh, its ok for now
 	_env:  strings.Replace(strings.ToLower(base64.Encode(null, auth.environment)), "=", "", -1)
@@ -130,13 +130,13 @@ import (
 	// the "to" environment
 	toEnvironment: string
 	// name of the application in the "to" environment
-	targetName: string
+	targetName: string | *null
 
-	// Internal flags
+	// Internal fields
 	_env: strings.Replace(strings.ToLower(base64.Encode(null, toEnvironment)), "=", "", -1)
 	_toEnvAppName: "\(name)-\(_env)"
 
-	if(targetName != "_|_"){
+	if( targetName != null ){
 		_toEnvAppName: targetName
 	}
 
