@@ -24,7 +24,7 @@ import (
 #_runCli: {
 	cliEnv: [string]: string
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion | string
-	cliCommand: "publish_apispec_exchange" | "publish_muleapp_exchange" | "publish_muleapp_cloudhub"
+	cliCommand: "publish_apispec_exchange" | "publish_muleapp_exchange" | "publish_muleapp_cloudhub" | "promote_muleapp_cloudhub"
 	cliAuth:    #Auth
 	source:     dagger.#FS
 	// Normally the layers are cached, the command won't be re-runed.

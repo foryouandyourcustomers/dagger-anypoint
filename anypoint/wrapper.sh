@@ -175,6 +175,50 @@ publish_muleapp_cloudhub(){
   cat /output
 }
 
+# API_NAME
+# API_NAME_TARGET
+# FROM_ENV
+# TO_ENV
+promote_muleapp_cloudhub(){
+  echo "Promoting Muleapp ${API_NAME}:  ${FROM_ENV} ==> ${TO_ENV}"
+  anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-status || true
+  init_status=$(cat /init-status)
+  echo "${APP_PROPERTIES}" > /deploy-properties
+
+  if [[ "${init_status}" == *"No application"* ]]; then
+      echo "No application found in ${FROM_ENV}; huh?"
+      exit 1
+  else
+    anypoint-cli runtime-mgr cloudhub-application copy "${API_NAME}" "${FROM_ENV}" "${TO_ENV}/${API_NAME_TARGET}"
+
+    # Now we change the environment
+    export ANYPOINT_ENV="${TO_ENV}"
+
+    anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME_TARGET}" > /init-deploy-status.json
+    app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
+    deploy_status=$(cat /init-deploy-status.json | jq -r .status)
+
+    echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
+
+    still_deploying=true
+     while ${still_deploying}; do
+      sleep 30
+      anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME_TARGET}" > /deploy-status.json
+      deploy_status=$(cat /deploy-status.json | jq -r .status)
+
+      echo "status: ${deploy_status}"
+      if [[ "${deploy_status}" == "STARTED" ]]; then
+          still_deploying=false
+      fi
+      if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
+          still_deploying=false
+          exit 1
+      fi
+    done
+  fi
+  mv /deploy-status.json /output
+  cat /output
+}
 
 # Set default target if none given as argument
 target=${1}

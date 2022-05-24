@@ -29,8 +29,6 @@ import (
 	// Internal fields
 	_id: strings.Replace(strings.ToLower(name), " ", "-", -1)
 
-
-
 	runCli: #_runCli & {
 		cliVersion: cliVersion
 		cliCommand: "publish_apispec_exchange"

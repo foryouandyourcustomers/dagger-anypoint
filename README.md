@@ -29,6 +29,7 @@ List of supported actions and its relation to anypoint platform
 | Test Mule Application                 | [`anypoint#TestMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L117)            | Tests Mule application by running MUnit test cases.                                                                                                                                                                       |
 | Publish Mule Application (jar)        | [`anypoint#PublishMuleAppExchange`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L20)  | Publishes the the Mule application artifact (jar) to Exchange                                                                                                                                                             |
 | Deploy Mule Application to CloudHub   | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
+| Promote Mule Application to CloudHub  | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
 
 ## Ongoing work
 
@@ -40,7 +41,7 @@ List of supported actions and its relation to anypoint platform
 | Create, Manage, Promote Automated Policies | Any                 | 🔄     |       |
 | Create & Manage Api Contracts              | Any                 | 🔄     |       |
 | Deploy Mule Application                    | Cloudhub            | ✅      |       |
-| Mule Application Environment Promotion     | Cloudhub            | 🔄     |       |
+| Mule Application Environment Promotion     | Cloudhub            | ✅      |       |
 | Deploy Mule Application                    | Hybrid              | 🔄     |       |
 | Mule Application Environment Promotion     | Hybrid              | 🔄     |       |
 | Deploy Mule Application                    | RTF                 | 🔄     |       |

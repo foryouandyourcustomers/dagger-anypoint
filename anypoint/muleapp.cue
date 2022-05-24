@@ -32,12 +32,12 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	// optionally, mention the name of the jarfile name inside the source
 	targetName: string | *" "
 
-// Internal fields
-	_id: strings.Replace(strings.ToLower(name), " ", "-", -1)
+	// Internal fields
+	_name:              strings.Replace(strings.ToLower(name), " ", "-", -1)
 	_deployableJarFile: string | *targetName
 
 	if ( targetName == " ") {
-		_deployableJarFile: "muleapp-\(_id)-\(version).jar"
+		_deployableJarFile: "muleapp-\(_name)-\(version).jar"
 	}
 
 	runCli: #_runCli & {
@@ -74,12 +74,12 @@ _#MavenVersion: "3.8.5-openjdk-11"
 	// optionally, mention the name of the jarfile name inside the source
 	targetName: string | *" "
 
-// Internal fields
-	_id: strings.Replace(strings.ToLower(name), " ", "-", -1)
+	// Internal fields
+	_name:              strings.Replace(strings.ToLower(name), " ", "-", -1)
 	_deployableJarFile: string | *targetName
 
 	if ( targetName == " ") {
-		_deployableJarFile: "muleapp-\(_id)-\(version).jar"
+		_deployableJarFile: "muleapp-\(_name)-\(version).jar"
 	}
 
 	_maven: docker.#Pull & {

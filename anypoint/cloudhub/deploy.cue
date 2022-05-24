@@ -6,6 +6,7 @@ import (
 	"list"
 	"strings"
 	"tool/http"
+	"encoding/base64"
 	"github.com/foryouandyourcustomers/dagger-anypoint/anypoint"
 )
 
@@ -20,7 +21,7 @@ import (
 	// Number of workers. (This value is '1' by default)
 	workers: *1 | number
 	// Size of the workers in vCores
-	workerSize: *1 | number
+	workerSize: *0.1 | number
 	// Name of the region to deploy to.
 	region: *"eu-central-1" | "ap-northeast-1" | "ap-southeast-1" | "ap-southeast-2" | "ca-central-1" | "eu-west-1" | "eu-west-2" | "sa-east-1" | "us-east-1" | "us-east-2" | "us-west-1" | "us-west-2"
 	// Configuration of persistent queues
@@ -45,14 +46,18 @@ import (
 	healthCheckPath: *"/" | string
 
 	// Internal flags
-	_id: strings.Replace(strings.ToLower(name), " ", "-", -1)
+
+	// yeah, this need not be unique always but meh, its ok for now
+	_env:  strings.Replace(strings.ToLower(base64.Encode(null, auth.environment)), "=", "", -1)
+	_name: strings.Replace(strings.ToLower(name), " ", "-", -1)
+	_id:   "\(_name)-\(_env)"
 	_default_props: {}
 	_encryptPersistentQueues: false | bool
 	_enablePersistentQueues:  false | bool
 	_deployableJarFile:       string | *targetName
 
 	if ( targetName == " ") {
-		_deployableJarFile: "muleapp-\(_id)-\(version).jar"
+		_deployableJarFile: "muleapp-\(_name)-\(version).jar"
 	}
 
 	if (persistentQueues == "enable") {
@@ -109,6 +114,44 @@ import (
 			response: status:     ""
 		}
 		_resultStatus: _checkHealth.response.statusCode
+	}
+
+}
+
+#PromoteMuleApp: {
+	// the container image
+	cliVersion: *"3.10.0" | anypoint._#DefaultCLIVersion
+	// the authentication for interacting with anytime platform
+	auth: anypoint.#Auth
+	// name of the application in the "from" environment
+	name: string
+	// the "from" environment
+	fromEnvironment: string
+	// the "to" environment
+	toEnvironment: string
+	// name of the application in the "to" environment
+	targetName: string
+
+	// Internal flags
+	_env: strings.Replace(strings.ToLower(base64.Encode(null, toEnvironment)), "=", "", -1)
+	_toEnvAppName: "\(name)-\(_env)"
+
+	if(targetName != "_|_"){
+		_toEnvAppName: targetName
+	}
+
+	runCli: anypoint.#_runCli & {
+		cliVersion:  cliVersion
+		cliCommand:  "promote_muleapp_cloudhub"
+		cliAuth:     auth
+		ignoreCache: true
+		cliEnv: {
+			API_NAME:        "\(name)"
+			API_NAME_TARGET: "\(_toEnvAppName)"
+			FROM_ENV:        "\(name)"
+			TO_ENV:          "\(name)"
+		}
+		source: _
 	}
 
 }
