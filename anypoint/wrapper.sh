@@ -19,7 +19,7 @@ export ANYPOINT_CLIENT_SECRET
 
 # dump env variables
 env
-publish_apispec_exchange(){
+publish_apispec_exchange() {
 
   projects=$(anypoint-cli designcenter project list "${API_NAME}" -o json | jq '. | length')
 
@@ -37,36 +37,36 @@ publish_apispec_exchange(){
   if [[ -n ${API_SPEC_PUBLISH} ]]; then
     echo "Publishing the project to the exchange"
     anypoint-cli designcenter project publish "${API_NAME}" \
-          --name "${API_NAME}" \
-          --apiVersion "${API_SPEC_MAJOR_VERSION}" \
-          --assetId "${API_SPEC_ID}" \
-          --groupId "${ANYPOINT_BG_ID}" \
-          --version "${API_SPEC_SEM_VERSION}"
+      --name "${API_NAME}" \
+      --apiVersion "${API_SPEC_MAJOR_VERSION}" \
+      --assetId "${API_SPEC_ID}" \
+      --groupId "${ANYPOINT_BG_ID}" \
+      --version "${API_SPEC_SEM_VERSION}"
 
   else
     echo "Skipping publishing the project to the exchange"
   fi
 
-  echo "https://anypoint.mulesoft.com/exchange/${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_SEM_VERSION}" > /output
+  echo "https://anypoint.mulesoft.com/exchange/${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_SEM_VERSION}" >/output
 }
 
 # API_NAME
 # API_SPEC_IMPL_SEM_VERSION
 # API_SPEC_IMPL_JAR_PATH
-publish_muleapp_exchange(){
+publish_muleapp_exchange() {
   echo "Publishing ${API_SPEC_IMPL_JAR_PATH} to the exchange"
 
   anypoint-cli exchange asset uploadv2 \
-       --client_id ${ANYPOINT_CLIENT_ID} \
-       --client_secret ${ANYPOINT_CLIENT_SECRET} \
-       --organization "${ANYPOINT_ORG}" \
-       --environment "${ANYPOINT_ENV}" \
-       --files.mule-application.jar "${API_SPEC_IMPL_JAR_PATH}" \
-       --type "app"  \
-       --name "${API_NAME}" "${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_IMPL_SEM_VERSION}"
+    --client_id ${ANYPOINT_CLIENT_ID} \
+    --client_secret ${ANYPOINT_CLIENT_SECRET} \
+    --organization "${ANYPOINT_ORG}" \
+    --environment "${ANYPOINT_ENV}" \
+    --files.mule-application.jar "${API_SPEC_IMPL_JAR_PATH}" \
+    --type "app" \
+    --name "${API_NAME}" "${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_IMPL_SEM_VERSION}"
 
-    # Url of the published app
-    echo "https://anypoint.mulesoft.com/exchange/${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_IMPL_SEM_VERSION}" > /output
+  # Url of the published app
+  echo "https://anypoint.mulesoft.com/exchange/${ANYPOINT_BG_ID}/${API_NAME}/${API_SPEC_IMPL_SEM_VERSION}" >/output
 }
 
 # API_NAME
@@ -80,95 +80,38 @@ publish_muleapp_exchange(){
 # CH_ENABLE_STATIC_IP
 # CH_ENABLE_AUTORESTART
 # API_SPEC_IMPL_JAR_PATH
-# TODO: clean up here
-publish_muleapp_cloudhub(){
-  echo "Checking if Muleapp ${API_NAME} already exists"\
+publish_muleapp_cloudhub() {
+  echo "Checking if Muleapp ${API_NAME} already exists"
   # When there's no app, the command exist 255 barrrr...
-  anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-status || true
+  anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" >/init-status || true
   init_status=$(cat /init-status)
-  echo "${APP_PROPERTIES}" > /deploy-properties
+  echo "${APP_PROPERTIES}" >/deploy-properties
 
   if [[ "${init_status}" == *"No application"* ]]; then
     echo "Deploying ${API_SPEC_IMPL_JAR_PATH} to the cloudhub @${CH_REGION} "
-
-    anypoint-cli runtime-mgr cloudhub-application deploy  \
-           --client_id ${ANYPOINT_CLIENT_ID} \
-           --client_secret ${ANYPOINT_CLIENT_SECRET} \
-           --organization "${ANYPOINT_ORG}" \
-           --environment "${ANYPOINT_ENV}" \
-           --runtime "${APP_RUNTIME}" \
-           --workers "${CH_WORKER_COUNT}" \
-           --workerSize "${CH_WORKER_SIZE}" \
-           --region "${CH_REGION}" \
-           --persistentQueues "${APP_ENABLE_PQ}" \
-           --persistentQueuesEncrypted "${APP_ENABLE_PQ_ENC}" \
-           --staticIPsEnabled "${CH_ENABLE_STATIC_IP}" \
-           --autoRestart "${CH_ENABLE_AUTORESTART}" \
-           --propertiesFile /deploy-properties \
-           "${API_NAME}" "${API_SPEC_IMPL_JAR_PATH}"
-
-    anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-deploy-status.json
-    app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
-    deploy_status=$(cat /init-deploy-status.json | jq -r .status)
-
-    echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
-    still_deploying=true
-
-    while ${still_deploying}; do
-        sleep 30
-        anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /deploy-status.json
-        deploy_status=$(cat /deploy-status.json | jq -r .status)
-
-        echo "status: ${deploy_status}"
-        if [[ "${deploy_status}" == "STARTED" ]]; then
-            still_deploying=false
-        fi
-        if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
-            still_deploying=false
-            exit 1
-        fi
-    done
-
+    deploy_cmd="deploy"
   else
-     echo "Muleapp '${API_NAME}' is already running; redeploying..."
-     anypoint-cli runtime-mgr cloudhub-application modify  \
-                --client_id ${ANYPOINT_CLIENT_ID} \
-                --client_secret ${ANYPOINT_CLIENT_SECRET} \
-                --organization "${ANYPOINT_ORG}" \
-                --environment "${ANYPOINT_ENV}" \
-                --runtime "${APP_RUNTIME}" \
-                --workers "${CH_WORKER_COUNT}" \
-                --workerSize "${CH_WORKER_SIZE}" \
-                --region "${CH_REGION}" \
-                --persistentQueues "${APP_ENABLE_PQ}" \
-                --persistentQueuesEncrypted "${APP_ENABLE_PQ_ENC}" \
-                --staticIPsEnabled "${CH_ENABLE_STATIC_IP}" \
-                --autoRestart "${CH_ENABLE_AUTORESTART}" \
-                --propertiesFile /deploy-properties \
-                "${API_NAME}" "${API_SPEC_IMPL_JAR_PATH}"
-
-    anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-deploy-status.json
-    app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
-    deploy_status=$(cat /init-deploy-status.json | jq -r .status)
-
-    echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
-    still_deploying=true
-
-    while ${still_deploying}; do
-        sleep 30
-        anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /deploy-status.json
-        deploy_status=$(cat /deploy-status.json | jq -r .status)
-
-        echo "status: ${deploy_status}"
-        if [[ "${deploy_status}" == "STARTED" ]]; then
-            still_deploying=false
-        fi
-        if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
-            still_deploying=false
-            exit 1
-        fi
-    done
+    echo "Muleapp '${API_NAME}' is already running; redeploying..."
+    deploy_cmd="modify"
   fi
+
+  anypoint-cli runtime-mgr cloudhub-application "${deploy_cmd}" \
+      --client_id ${ANYPOINT_CLIENT_ID} \
+      --client_secret ${ANYPOINT_CLIENT_SECRET} \
+      --organization "${ANYPOINT_ORG}" \
+      --environment "${ANYPOINT_ENV}" \
+      --runtime "${APP_RUNTIME}" \
+      --workers "${CH_WORKER_COUNT}" \
+      --workerSize "${CH_WORKER_SIZE}" \
+      --region "${CH_REGION}" \
+      --persistentQueues "${APP_ENABLE_PQ}" \
+      --persistentQueuesEncrypted "${APP_ENABLE_PQ_ENC}" \
+      --staticIPsEnabled "${CH_ENABLE_STATIC_IP}" \
+      --autoRestart "${CH_ENABLE_AUTORESTART}" \
+      --propertiesFile /deploy-properties \
+      "${API_NAME}" "${API_SPEC_IMPL_JAR_PATH}"
+
+  _check_deploy_status "${API_NAME}"
 
   mv /init-status /output
   mv /deploy-status.json /output
@@ -179,45 +122,66 @@ publish_muleapp_cloudhub(){
 # API_NAME_TARGET
 # FROM_ENV
 # TO_ENV
-promote_muleapp_cloudhub(){
-  echo "Promoting Muleapp ${API_NAME}:  ${FROM_ENV} ==> ${TO_ENV}"
-  anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" > /init-status || true
+promote_muleapp_cloudhub() {
+  source_app="${ANYPOINT_BG_ID}:${FROM_ENV}/${API_NAME}"
+  target_app="${ANYPOINT_BG_ID}:${TO_ENV}/${API_NAME_TARGET}"
+
+  echo "Promoting Muleapp ${source_app} ==> ${target_app}"
+  anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME}" >/init-status || true
   init_status=$(cat /init-status)
-  echo "${APP_PROPERTIES}" > /deploy-properties
+  echo "${APP_PROPERTIES}" >/deploy-properties
 
   if [[ "${init_status}" == *"No application"* ]]; then
-      echo "No application found in ${FROM_ENV}; huh?"
-      exit 1
+    echo "No application found in ${FROM_ENV}; huh?"
+    exit 1
   else
-    anypoint-cli runtime-mgr cloudhub-application copy "${API_NAME}" "${FROM_ENV}" "${TO_ENV}/${API_NAME_TARGET}"
 
-    # Now we change the environment
+    # Check if the app is already running in promoted environment?
+    ANYPOINT_ENV="${TO_ENV}" anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME_TARGET}" >/init-status || true
+    init_status=$(cat /init-status)
+
+    if [[ "${init_status}" == *"No application"* ]]; then
+        echo "No application found in ${TO_ENV}; promoting..."
+        promote_cmd="copy"
+    else
+        echo "Application already in ${TO_ENV}; promoting by overriding..."
+        echo "${init_status}"
+        promote_cmd="copy-replace"
+    fi
+
+    anypoint-cli runtime-mgr cloudhub-application "${promote_cmd}" "${source_app}" "${target_app}"
     export ANYPOINT_ENV="${TO_ENV}"
-
-    anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME_TARGET}" > /init-deploy-status.json
-    app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
-    deploy_status=$(cat /init-deploy-status.json | jq -r .status)
-
-    echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
-
-    still_deploying=true
-     while ${still_deploying}; do
-      sleep 30
-      anypoint-cli runtime-mgr cloudhub-application describe-json "${API_NAME_TARGET}" > /deploy-status.json
-      deploy_status=$(cat /deploy-status.json | jq -r .status)
-
-      echo "status: ${deploy_status}"
-      if [[ "${deploy_status}" == "STARTED" ]]; then
-          still_deploying=false
-      fi
-      if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
-          still_deploying=false
-          exit 1
-      fi
-    done
+    _check_deploy_status "${API_NAME_TARGET}"
   fi
+
   mv /deploy-status.json /output
   cat /output
+}
+
+_check_deploy_status() {
+  app_name=$1
+
+  anypoint-cli runtime-mgr cloudhub-application describe-json "${app_name}" >/init-deploy-status.json
+  app_url=$(cat /init-deploy-status.json | jq -r .fullDomain)
+  deploy_status=$(cat /init-deploy-status.json | jq -r .status)
+
+  echo "Application will be available at: '${app_url}' waiting to be deployed; status: ${deploy_status}"
+  still_deploying=true
+
+  while ${still_deploying}; do
+    sleep 30
+    anypoint-cli runtime-mgr cloudhub-application describe-json "${app_name}" >/deploy-status.json
+    deploy_status=$(cat /deploy-status.json | jq -r .status)
+
+    echo "status: ${deploy_status}"
+    if [[ "${deploy_status}" == "STARTED" ]]; then
+      still_deploying=false
+    fi
+    if [[ "${deploy_status}" == "DEPLOY_FAILED" ]]; then
+      still_deploying=false
+      exit 1
+    fi
+  done
 }
 
 # Set default target if none given as argument

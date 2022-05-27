@@ -26,7 +26,7 @@ import (
 	cliVersion: *"3.10.0" | _#DefaultCLIVersion | string
 	cliCommand: "publish_apispec_exchange" | "publish_muleapp_exchange" | "publish_muleapp_cloudhub" | "promote_muleapp_cloudhub"
 	cliAuth:    #Auth
-	source:     dagger.#FS
+	source:     dagger.#FS | *null
 	// Normally the layers are cached, the command won't be re-runed.
 	ignoreCache: *false | bool
 
@@ -54,9 +54,11 @@ import (
 		}
 		workdir: "/"
 		mounts: {
-			"payload": {
-				dest:       "/src"
-				"contents": source
+			if (source != null) {
+				"payload": {
+					dest:       "/src"
+					"contents": source
+				}
 			}
 			"Client Id": {
 				dest:     "/run/secrets/clientId"

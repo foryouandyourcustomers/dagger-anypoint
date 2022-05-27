@@ -123,21 +123,37 @@ import (
 	cliVersion: *"3.10.0" | anypoint._#DefaultCLIVersion
 	// the authentication for interacting with anytime platform
 	auth: anypoint.#Auth
-	// name of the application in the "from" environment
-	name: string
 	// the "from" environment
-	fromEnvironment: string
+	fromEnv: *auth.environment | string
 	// the "to" environment
-	toEnvironment: string
+	toEnv: string
+	// name of the application in the "from" environment - this is different from appName
+	// we expect either fromEnvApiName or fromEnvAppName to be provided
+	{
+		fromEnvApiName:  string
+		_fromEnvApiName: strings.Replace(strings.ToLower(fromEnvApiName), " ", "-", -1)
+		_fromEnvEncoded: strings.Replace(strings.ToLower(base64.Encode(null, fromEnv)), "=", "", -1)
+		// this is the actual app name
+		_fromEnvAppName: "\(_fromEnvApiName)-\(_fromEnvEncoded)"
+		_toEnvAppName:   "\(_fromEnvApiName)-\(_toEnvEncoded)"
+	} | {
+		// the name of the app "as is" in the environment
+		fromEnvAppName:  string
+		_fromEnvAppName: fromEnvAppName
+		_toEnvAppName:   "\(_fromEnvAppName)-\(_toEnvEncoded)"
+	}
+
 	// name of the application in the "to" environment
-	targetName: string | *null
+	toEnvAppName: *null | string
 
 	// Internal fields
-	_env: strings.Replace(strings.ToLower(base64.Encode(null, toEnvironment)), "=", "", -1)
-	_toEnvAppName: "\(name)-\(_env)"
+	_fromEnvAppName: string
+	_toEnvAppName:   string
 
-	if( targetName != null ){
-		_toEnvAppName: targetName
+	_toEnvEncoded: strings.Replace(strings.ToLower(base64.Encode(null, toEnv)), "=", "", -1)
+
+	if (toEnvAppName != null ) {
+		_toEnvAppName: toEnvAppName
 	}
 
 	runCli: anypoint.#_runCli & {
@@ -146,12 +162,11 @@ import (
 		cliAuth:     auth
 		ignoreCache: true
 		cliEnv: {
-			API_NAME:        "\(name)"
+			API_NAME:        "\(_fromEnvAppName)"
 			API_NAME_TARGET: "\(_toEnvAppName)"
-			FROM_ENV:        "\(name)"
-			TO_ENV:          "\(name)"
+			FROM_ENV:        "\(fromEnv)"
+			TO_ENV:          "\(toEnv)"
 		}
-		source: _
 	}
 
 }
