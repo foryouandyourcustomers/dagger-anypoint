@@ -122,6 +122,7 @@ publish_muleapp_cloudhub() {
 # API_NAME_TARGET
 # FROM_ENV
 # TO_ENV
+# OVERRIDING_PROPS
 promote_muleapp_cloudhub() {
   source_app="${ANYPOINT_BG_ID}:${FROM_ENV}/${API_NAME}"
   target_app="${ANYPOINT_BG_ID}:${TO_ENV}/${API_NAME_TARGET}"
@@ -147,9 +148,12 @@ promote_muleapp_cloudhub() {
         echo "Application already in ${TO_ENV}; promoting by overriding..."
         echo "${init_status}"
         promote_cmd="copy-replace"
+        # we can not add overriding properties when replacing...
+        echo "Ignoring ${OVERRIDING_PROPS} ... these are not supported"
+        OVERRIDING_PROPS=""
     fi
 
-    anypoint-cli runtime-mgr cloudhub-application "${promote_cmd}" "${source_app}" "${target_app}"
+    anypoint-cli runtime-mgr cloudhub-application "${promote_cmd}" "${source_app}" "${target_app}" "${OVERRIDING_PROPS}"
     export ANYPOINT_ENV="${TO_ENV}"
     _check_deploy_status "${API_NAME_TARGET}"
   fi

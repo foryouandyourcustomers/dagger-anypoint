@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"github.com/foryouandyourcustomers/dagger-anypoint/anypoint"
 )
+_default_props: {}
 
 // Publishes Mule App to cloudhub directly
 #PublishMuleApp: {
@@ -51,7 +52,6 @@ import (
 	_env:  strings.Replace(strings.ToLower(base64.Encode(null, auth.environment)), "=", "", -1)
 	_name: strings.Replace(strings.ToLower(name), " ", "-", -1)
 	_id:   "\(_name)-\(_env)"
-	_default_props: {}
 	_encryptPersistentQueues: false | bool
 	_enablePersistentQueues:  false | bool
 	_deployableJarFile:       string | *targetName
@@ -145,16 +145,26 @@ import (
 
 	// name of the application in the "to" environment
 	toEnvAppName: *null | string
-
+	// properties that must be passed to the application
+	properties: [string]: string | *_default_props
 	// Internal fields
 	_fromEnvAppName: string
 	_toEnvAppName:   string
-
 	_toEnvEncoded: strings.Replace(strings.ToLower(base64.Encode(null, toEnv)), "=", "", -1)
 
 	if (toEnvAppName != null ) {
 		_toEnvAppName: toEnvAppName
 	}
+	// combine the properties
+	_properties: strings.Join(list.FlattenN(
+			[
+				for k, v in properties {
+				if (v & string) != _|_ && (k & string) != _|_ {
+					["--property \"\(k):\(v)\""]
+				}
+			},
+		],
+		1), " ")
 
 	runCli: anypoint.#_runCli & {
 		cliVersion:  cliVersion
@@ -166,6 +176,9 @@ import (
 			API_NAME_TARGET: "\(_toEnvAppName)"
 			FROM_ENV:        "\(fromEnv)"
 			TO_ENV:          "\(toEnv)"
+			if (_properties != "_|_") {
+				OVERRIDING_PROPS: "\(_properties)"
+			}
 		}
 	}
 
