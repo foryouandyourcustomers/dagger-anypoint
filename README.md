@@ -1,4 +1,5 @@
 ⚠️ _The module is under active development. Not suitable for production usage_ 
+
 # Dagger Anypoint package
 
 A [dagger](https://dagger.io/) module for building, testing and deploying Api specification and Mule applications (Api Implementations) to Anypoint platform. The module internally uses [`anypoint-cli`](https://docs.mulesoft.com/anypoint-cli/3.x). 
@@ -8,9 +9,8 @@ A [dagger](https://dagger.io/) module for building, testing and deploying Api sp
 You can install the latest release with
 
 ```shell
-dagger project update github.com/foryouandyourcustomers/dagger-anypoint/anypoint@<release>
+dagger project update github.com/foryouandyourcustomers/dagger-anypoint/anypoint@<tag>
 ```
-If you want to work directly with `release` change the version to `main` or use one of the tagged releases 
 
 ### Usage & Examples
 
@@ -28,8 +28,8 @@ List of supported actions and its relation to anypoint platform
 | Build Mule Application(jar)           | [`anypoint#BuildMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L52)            | Builds Mule application to the mule application                                                                                                                                                                           |
 | Test Mule Application                 | [`anypoint#TestMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L117)            | Tests Mule application by running MUnit test cases.                                                                                                                                                                       |
 | Publish Mule Application (jar)        | [`anypoint#PublishMuleAppExchange`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/apiImpl.cue#L20)  | Publishes the the Mule application artifact (jar) to Exchange                                                                                                                                                             |
-| Deploy Mule Application to CloudHub   | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
-| Promote Mule Application to CloudHub  | [`anypoint#PublishMuleAppCloudHub`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
+| Deploy Mule Application to CloudHub   | [`cloudhub#PublishMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
+| Promote Mule Application to CloudHub  | [`cloudhub#PublishMuleApp`](https://github.com/foryouandyourcustomers/dagger-anypoint/blob/main/anypoint/cloudhub.cue#L11) | Deploys the Mule Application to CloudHub runtime.                                                                                                                                                                         |
 
 ## Ongoing work
 
